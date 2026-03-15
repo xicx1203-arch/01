@@ -1,0 +1,30 @@
+name: Daily Stock AI Report
+
+on:
+  schedule:
+    # 這裡就是設定時間：每天 UTC 23:30 (等於台灣時間早上 07:30)
+    - cron: '30 23 * * *'
+  workflow_dispatch: # 這行會讓你多出一個「手動啟動」的按鈕，方便現在測試
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: |
+          pip install yfinance google-generativeai pandas
+
+      - name: Run script
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GMAIL_USER: ${{ secrets.GMAIL_USER }}
+          GMAIL_PWD: ${{ secrets.GMAIL_PWD }}
+        run: python main.py
